@@ -8,6 +8,7 @@ class Node
 {
     public:
         Node();
+        explicit Node(const eltType&);
         std::shared_ptr<Node<eltType>> last = nullptr;
         std::shared_ptr<Node<eltType>> next = nullptr;
         std::optional<eltType> data;
@@ -16,6 +17,9 @@ class Node
 
 template <typename eltType>
 Node<eltType>::Node() : data(std::nullopt) {}
+
+template <typename eltType>
+Node<eltType>::Node(const eltType& value) : data(value) {}
 
 template <typename eltType>
 void Node<eltType>::erase() {data.reset();}
@@ -33,6 +37,8 @@ class superList
         int size();
         Node<eltType> front();
         Node<eltType> back();
+
+        std::shared_ptr<Node<eltType>> operator[](int);
         
         void insertRear(const eltType&);
         void insertFront(const eltType&);
@@ -71,17 +77,47 @@ void superList<eltType>::insertRear(const eltType& value)
 {
     if(expansionAllowed)
     {
-        Node<eltType> tempNode = std::make_shared<Node<eltType>>(value);
+        auto tempNode = std::make_shared<Node<eltType>>(value);
         if(nodeCount == 0) 
             {begin = end = tempNode;}
         else
         {
-            end->get()->next = tempNode;
+            end->next = tempNode;
             tempNode->last = end;
             end = tempNode;
         }
         ++nodeCount;
     }
+}
+
+template <typename eltType>
+void superList<eltType>::insertFront(const eltType& value)
+{
+    if(expansionAllowed)
+    {
+        auto tempNode = std::make_shared<Node<eltType>>(value);
+        if(nodeCount == 0)
+            {begin = end = tempNode;}
+        else
+        {
+            begin->last = tempNode;
+            tempNode->next = begin;
+            begin = tempNode;
+        }
+    }
+    ++nodeCount;
+}
+
+template <typename eltType>
+void superList<eltType>::insertOrdered(const eltType& value)
+{
+
+}
+
+template <typename eltType>
+void superList<eltType>::insertBulk(const std::initializer_list<eltType>& list)
+{
+
 }
 
 template <typename eltType>
@@ -95,5 +131,17 @@ Node<eltType> superList<eltType>::front()
 template <typename eltType>
 Node<eltType> superList<eltType>::back() 
     {return end->get();}
+
+template <typename eltType>
+std::shared_ptr<Node<eltType>> superList<eltType>::operator[](int index)
+{
+    if(index < 0 || index > nodeCount-1)
+        {throw std::out_of_range("Error. Reference to out of bounds index");}
+
+    auto current = begin;
+    for(int i=0; i != index; ++i)
+        {current = current->next;}
+    return current;
+}
 
 #endif

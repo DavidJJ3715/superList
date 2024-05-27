@@ -5,6 +5,14 @@
 
 int main()
 {
+    superList<int> myList(3);
+    for(int i=0; i<myList.size(); ++i)
+        {std::cout << " " << myList[i]->data.value();}
+
+    std::cout << std::endl;
+    superList<int> list2({1,2,3});
+    for(int i=0; i<list2.size(); ++i)
+        {std::cout << " " << list2[i]->data.value();}
     return 0;
 }
 
