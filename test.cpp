@@ -5,14 +5,30 @@
 
 int main()
 {
-    superList<int> myList(3);
-    for(int i=0; i<myList.size(); ++i)
-        {std::cout << " " << myList[i]->data.value();}
+    superList<int> list1(3);
+    for(int i=0; i<list1.size(); ++i)
+        {std::cout << " " << list1[i]->data.value();}
 
     std::cout << std::endl;
     superList<int> list2({1,2,3});
     for(int i=0; i<list2.size(); ++i)
         {std::cout << " " << list2[i]->data.value();}
+
+    std::cout << std::endl;
+    superList<int> list3;
+    std::cout << " " << list3[0]->data.value();
+
+    std::cout << std::endl;
+    superList<std::string> list4(5);
+    for(int i=0; i<list4.size(); ++i)
+        {std::cout << " " << list4[i]->data.value();}
+
+    std::cout << std::endl;
+    superList<std::string> list5({"hello", "meatball", "spongecake", "stringExample"});
+    for(int i=0; i<list5.size(); ++i)
+        {std::cout << " " << list5[i]->data.value();}
+
+    std::cout << std::endl;
     return 0;
 }
 

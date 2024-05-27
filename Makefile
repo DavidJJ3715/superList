@@ -7,5 +7,4 @@ main: $(dependencies)
 	g++ $(errflags) test.cpp -o test $(linkedLibraries)
 
 test: main
-	python key.py
 	./test.exe
