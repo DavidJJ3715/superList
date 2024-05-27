@@ -28,56 +28,71 @@ int main()
     for(int i=0; i<list5.size(); ++i)
         {std::cout << " " << list5[i]->data.value();}
 
+    //This should not be allowed because the list should be entirely immutable
+    std::cout << std::endl;
+    list2[1]->erase();
+    for(int i=0; i<list2.size(); ++i)
+        {std::cout << " " << list2[i]->data.has_value();}
+    std::cout << std::endl;
+    
+
     std::cout << std::endl;
     return 0;
 }
 
 /*
     ! Size is default <1> if nothing is specified upon creation
-        ? superList *myList = new myList()  --> myList.size() == 1
-        ? superList *myList = new myList(1) --> myList.size() == 1
+        ? superList *list = new myList()            --> myList.size() == 1
+        ? superList *list = new myList(1)           --> myList.size() == 1
     ! Defining contents of list upon creation makes list immutable
-        ? superList *myList = new myList(<contents>); == entirely immutable
-        ? superList *myList = new myList(<size>); == size immutable
-        ? superList *myList = new myList(); == entirely mutable
+        ? superList<int> list(<contents>);          --> entirely immutable
+        ? superList<int> list(<size>);              --> size immutable
+        ? superList<int> list;                      --> entirely mutable
     ! Indexed doubly linked list
-        * superList *myList = new myList({1,2,3});
-            ? cout << temp[1];              --> 2
-            ? cout << temp[1]->next;        --> 3
-            ? cout << temp[1]->last;        --> 1
-            ? cout << temp[0]->last;        --> Null
-            ? cout << temp[2]->next;        --> Null
-            ? cout << temp[4];              --> Error. Reference to out of bounds index
+        * superList<int> list({1,2,3});
+            ? cout << list[1]->data.value();        --> 2
+            ? cout << list[1]->next->data.value();  --> 3
+            ? cout << list[1]->last->data.value();  --> 1
+            ? cout << list[0]->last->data.value();  --> Null
+            ? cout << list[2]->next->data.value();  --> Null
+            ? cout << list[4]->data.value();        --> Error. Reference to out of bounds index
     ! Print entire list using cout
-        * superList *myList = new myList({1,2,3});
-            ? cout << myList;               --> [1,2,3]
+        * superList<int> list({1,2,3});
+            ? cout << list;                         --> [1,2,3]
     ! Head and rear pointer
     !   <front> and <back> point to a node object that will output its contents if cout is called on it
-        * superList *myList = new myList({1,2,3});
-            ? cout << myList->front()->data;--> 1
-            ? cout << myList->back()->data; --> 3
-            ? cout << myList->front();      --> 1
-            ? cout << myList->back();       --> 3
+        * superList<int> list({1,2,3});
+            ? cout << list->front()->data.value();  --> 1
+            ? cout << list->back()->data.value();   --> 3
+            ? cout << list->front().value();        --> 1
+            ? cout << list->back().value();         --> 3
     ! Ordered and unordered insertion options both push and push_back style as well as bulk and indexed entry
-        * superList *myList = new myList();
-            ? myList.insertBulk(1,3,5);     --> [1,3,5]
-            ? myList.insertOrdered(4);      --> [1,3,4,5]
-            ? myList.insertFront(7);        --> [7,1,3,4,5]
-            ? myList.insertRear(2);         --> [7,1,3,4,5,2]
-            ? myList[1] = 4;                --> [1,4,3,4,5,2]
-        * superList *myList = new myList({1,3,5})
-        * superList *myList = new myList(5)
-            ? myList.insertRear(6);         --> Error. Cannot alter immutable superList object
+        * superList<int> list;
+            ? list.insertBulk(1,3,5);               --> [1,3,5]
+            ? list.insertOrdered(4);                --> [1,3,4,5]
+            ? list.insertFront(7);                  --> [7,1,3,4,5]
+            ? list.insertRear(2);                   --> [7,1,3,4,5,2]
+            ? list[1] = 4;                          --> [1,4,3,4,5,2]
+        * superList<int> list(5);
+            ? list.insertRear(6);                   --> Error. Cannot alter immutable superList object
     ! Deletion is typical linked list deletion plus ability to directly alter Node values using [].
-    !   Changes done directly to Node object will have no affect on the superList object
-        * superList *myList = new myList()
-            ? myList.insertBulk(1,3,5,7,9); --> [1,3,5,7,9]
-            ? myList.removeFront();         --> [3,5,7,9]
-            ? myList.removeBack();          --> [3,5,7]
-            ? myList.remove(1);             --> [3,7]
-            ? myList[1].erase();            --> [3,Null] *Note that Node object still exists, but has a Null value*
-            ? myList[2].erase();            --> Error. Reference to out of bounds index
-            ? myList.remove();              --> Error. Not given an index
-            ? myList.remove(8);             --> Error. Attempting to erase out of bounds index
-            ? myList.clear();               --> [Null]
+    !   There will be no calls directly to Node object for changing values as to preserve immutability
+        * superList<int> list;
+            ? list.insertBulk(1,3,5,7,9);           --> [1,3,5,7,9]
+            ? list.removeFront();                   --> [3,5,7,9]
+            ? list.removeBack();                    --> [3,5,7]
+            ? list.remove(1);                       --> [3,7]
+            ? list.remove();                        --> Error. Not given an index
+            ? list.remove(8);                       --> Error. Attempting to erase out of bounds index
+            ? list.clear();                         --> []
+    ! Assignment operator can be used to overwrite values in the superList object, but only if the list is mutable
+        * superList<int> list({1,2,3});
+            ? list[1] = 5;                          --> Error. Attempting to alter immutable superList object
+            ? list.clear();                         --> Error. Attempting to alter immutable superList object
+            ? list.remove(1);                       --> Error. Attempting to alter immutable superList object
+        * superList<int> list;
+        * list.insertBulk({1,2,3});
+            ? list[2] = 5;                          --> [1,2,5]
+            ? list.clear();                         --> []
+            ? list.remove(1)                        --> [1,5]
 */

@@ -88,6 +88,7 @@ void superList<eltType>::insertRear(const eltType& value)
         }
         ++nodeCount;
     }
+    else {throw std::out_of_range("Error. Cannot alter immutable superList object");}
 }
 
 template <typename eltType>
@@ -104,8 +105,9 @@ void superList<eltType>::insertFront(const eltType& value)
             tempNode->next = begin;
             begin = tempNode;
         }
+        ++nodeCount;
     }
-    ++nodeCount;
+    else {throw std::out_of_range("Error. Cannot alter immutable superList object");}
 }
 
 template <typename eltType>
