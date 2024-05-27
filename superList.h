@@ -26,12 +26,74 @@ template <typename eltType>
 class superList
 {
     public:
-        std::shared_ptr<Node> front = nullptr;
-        std::shared_ptr<Node> back = nullptr;
-    
-    private:
-        int nodeCount = 1;
+        superList();
+        explicit superList(int);
+        explicit superList(std::initializer_list<eltType>);
 
+        int size();
+        Node<eltType> front();
+        Node<eltType> back();
+        
+        void insertRear(const eltType&);
+        void insertFront(const eltType&);
+        void insertOrdered(const eltType&);
+        void insertBulk(const std::initializer_list<eltType>&);
+
+    private:
+        bool expansionAllowed = true;
+        int nodeCount = 0;
+        std::shared_ptr<Node<eltType>> begin = nullptr;
+        std::shared_ptr<Node<eltType>> end = nullptr; 
 };
+
+template <typename eltType>
+superList<eltType>::superList() 
+    {insertRear(eltType());}
+
+template <typename eltType>
+superList<eltType>::superList(int size) 
+{
+    for(int i=0; i<size; ++i)
+        {insertRear(eltType());}
+    expansionAllowed = false;
+}
+
+template <typename eltType>
+superList<eltType>::superList(std::initializer_list<eltType> list)
+{
+    for(auto it = list.begin(); it != list.end(); ++it)
+        {insertRear(*it);}
+    expansionAllowed = false;
+}
+
+template <typename eltType>
+void superList<eltType>::insertRear(const eltType& value)
+{
+    if(expansionAllowed)
+    {
+        Node<eltType> tempNode = std::make_shared<Node<eltType>>(value);
+        if(nodeCount == 0) 
+            {begin = end = tempNode;}
+        else
+        {
+            end->get()->next = tempNode;
+            tempNode->last = end;
+            end = tempNode;
+        }
+        ++nodeCount;
+    }
+}
+
+template <typename eltType>
+int superList<eltType>::size() 
+    {return nodeCount;}
+
+template <typename eltType>
+Node<eltType> superList<eltType>::front() 
+    {return begin->get();}
+
+template <typename eltType>
+Node<eltType> superList<eltType>::back() 
+    {return end->get();}
 
 #endif
