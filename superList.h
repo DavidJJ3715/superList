@@ -12,7 +12,6 @@ class Node
         std::shared_ptr<Node<eltType>> last = nullptr;
         std::shared_ptr<Node<eltType>> next = nullptr;
         std::optional<eltType> data;
-        void erase();
 };
 
 template <typename eltType>
@@ -20,9 +19,6 @@ Node<eltType>::Node() : data(std::nullopt) {}
 
 template <typename eltType>
 Node<eltType>::Node(const eltType& value) : data(value) {}
-
-template <typename eltType>
-void Node<eltType>::erase() {data.reset();}
 
 /*****************************************************************************************/
 
@@ -34,11 +30,11 @@ class superList
         explicit superList(int);
         explicit superList(std::initializer_list<eltType>);
 
-        int size();
+        int size() const;
         Node<eltType> front();
         Node<eltType> back();
 
-        std::shared_ptr<Node<eltType>> operator[](int);
+        std::shared_ptr<Node<eltType>> operator[](int) const;
         
         void insertRear(const eltType&);
         void insertFront(const eltType&);
@@ -46,7 +42,7 @@ class superList
         void insertBulk(const std::initializer_list<eltType>&);
 
     private:
-        bool expansionAllowed = true;
+        bool sizeImmutable = false, dataImmutable = false;
         int nodeCount = 0;
         std::shared_ptr<Node<eltType>> begin = nullptr;
         std::shared_ptr<Node<eltType>> end = nullptr; 
@@ -61,21 +57,20 @@ superList<eltType>::superList(int size)
 {
     for(int i=0; i<size; ++i)
         {insertRear(eltType());}
-    expansionAllowed = false;
+    sizeImmutable = true;
 }
 
 template <typename eltType>
 superList<eltType>::superList(std::initializer_list<eltType> list)
 {
-    for(auto it = list.begin(); it != list.end(); ++it)
-        {insertRear(*it);}
-    expansionAllowed = false;
+    insertBulk(list);
+    sizeImmutable = true, dataImmutable = true;
 }
 
 template <typename eltType>
 void superList<eltType>::insertRear(const eltType& value)
 {
-    if(expansionAllowed)
+    if(!sizeImmutable)
     {
         auto tempNode = std::make_shared<Node<eltType>>(value);
         if(nodeCount == 0) 
@@ -88,13 +83,13 @@ void superList<eltType>::insertRear(const eltType& value)
         }
         ++nodeCount;
     }
-    else {throw std::out_of_range("Error. Cannot alter immutable superList object");}
+    else {throw std::logic_error("Error. Cannot alter immutable superList object");}
 }
 
 template <typename eltType>
 void superList<eltType>::insertFront(const eltType& value)
 {
-    if(expansionAllowed)
+    if(!sizeImmutable)
     {
         auto tempNode = std::make_shared<Node<eltType>>(value);
         if(nodeCount == 0)
@@ -107,7 +102,7 @@ void superList<eltType>::insertFront(const eltType& value)
         }
         ++nodeCount;
     }
-    else {throw std::out_of_range("Error. Cannot alter immutable superList object");}
+    else {throw std::logic_error("Error. Cannot alter immutable superList object");}
 }
 
 template <typename eltType>
@@ -119,11 +114,12 @@ void superList<eltType>::insertOrdered(const eltType& value)
 template <typename eltType>
 void superList<eltType>::insertBulk(const std::initializer_list<eltType>& list)
 {
-
+    for(auto it = list.begin(); it != list.end(); ++it)
+        {insertRear(*it);}
 }
 
 template <typename eltType>
-int superList<eltType>::size() 
+int superList<eltType>::size() const
     {return nodeCount;}
 
 template <typename eltType>
@@ -135,7 +131,7 @@ Node<eltType> superList<eltType>::back()
     {return end->get();}
 
 template <typename eltType>
-std::shared_ptr<Node<eltType>> superList<eltType>::operator[](int index)
+std::shared_ptr<Node<eltType>> superList<eltType>::operator[](int index) const
 {
     if(index < 0 || index > nodeCount-1)
         {throw std::out_of_range("Error. Reference to out of bounds index");}
@@ -144,6 +140,26 @@ std::shared_ptr<Node<eltType>> superList<eltType>::operator[](int index)
     for(int i=0; i != index; ++i)
         {current = current->next;}
     return current;
+}
+
+/**************************************************************************************/
+
+template <typename eltType>
+std::ostream& operator<<(std::ostream& os, const std::optional<eltType>& opt)
+{
+    if(opt.has_value())
+        {os << opt.value();}
+    else
+        {os << "nullopt";}
+    return os;
+}
+
+template <typename eltType>
+std::ostream& operator<<(std::ostream& os, const superList<eltType>& list)
+{
+    for(int i=0; i<list.size(); ++i)
+        {os << list[i]->data.value() << " ";}
+    return os;
 }
 
 #endif

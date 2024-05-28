@@ -1,42 +1,56 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <typeinfo>
 #include "superList.h"
 
 int main()
 {
+    //! Test 1
+    std::cout << "\n\nTest 1:\t";
     superList<int> list1(3);
     for(int i=0; i<list1.size(); ++i)
-        {std::cout << " " << list1[i]->data.value();}
+        {std::cout << list1[i]->data.value() << " ";}
 
-    std::cout << std::endl;
+    //! Test 2
+    std::cout << "\nTest 2:\t";
     superList<int> list2({1,2,3});
     for(int i=0; i<list2.size(); ++i)
-        {std::cout << " " << list2[i]->data.value();}
+        {std::cout << list2[i]->data.value() << " ";}
 
-    std::cout << std::endl;
+    //! Test 3
+    std::cout << "\nTest 3:\t";
     superList<int> list3;
-    std::cout << " " << list3[0]->data.value();
+    std::cout << list3[0]->data.value() << " ";
 
-    std::cout << std::endl;
+    //! Test 4
+    std::cout << "\nTest 4:\t";
     superList<std::string> list4(5);
     for(int i=0; i<list4.size(); ++i)
-        {std::cout << " " << list4[i]->data.value();}
+        {std::cout << list4[i]->data.value() << " ";}
 
-    std::cout << std::endl;
+    //! Test 5
+    std::cout << "\nTest 5:\t";
     superList<std::string> list5({"hello", "meatball", "spongecake", "stringExample"});
     for(int i=0; i<list5.size(); ++i)
-        {std::cout << " " << list5[i]->data.value();}
-
-    //This should not be allowed because the list should be entirely immutable
-    std::cout << std::endl;
-    list2[1]->erase();
-    for(int i=0; i<list2.size(); ++i)
-        {std::cout << " " << list2[i]->data.has_value();}
-    std::cout << std::endl;
+        {std::cout << list5[i]->data.value() << " ";}
     
+    //! Test 6
+    std::cout << "\nTest 6:\t";
+    std::cout << list5;
 
-    std::cout << std::endl;
+    //! Test 7
+    std::cout << "\nTest 7:\t";
+    list3.insertBulk({14,15,6465,654,654,456,456});
+    std::cout << list3;
+
+    //! Test 8
+    std::cout << "\nTest 8:\t";
+    for(int i=0; i<list4.size(); ++i)
+        {list4[i]->data = "Hello";}
+    std::cout << list4;
+
+    std::cout << "\n\n\n";
     return 0;
 }
 
